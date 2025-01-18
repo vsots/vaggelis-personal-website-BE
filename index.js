@@ -10,7 +10,7 @@ server.listen(port, host, () => {
 })
 
 function handler(req, res) {
-    if (req.method === 'POST' && req.url === '/testurl') {
+    if (req.method === 'POST' && req.url === '/contactsubmission') {
         let data = '';
         req.on('data', (chunk) => {
             data += chunk;
