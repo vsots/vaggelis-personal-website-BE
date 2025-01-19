@@ -10,21 +10,28 @@ server.listen(port, host, () => {
 })
 
 function handler(req, res) {
-    if (req.headers["access-control-request-method"] === 'POST' && req.url === '/contactsubmission') {
+    const headers = {
+        'Access-Control-Allow-Origin': 'http://localhost:3000',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+    };
+
+    if (req.method === 'OPTIONS') res.writeHead(200, headers).end();
+    else if (req.method === 'POST' && req.url === '/contactsubmission') {
         let data = '';
-        req.on('data', (chunk) => {
-            data += chunk;
-        })
+        req.on('data', chunk => data += chunk);
         req.on('end', () => {
             const valid = contactFormValSan(JSON.parse(data));
             if (!valid) {
-                res.writeHead(400, { 'Content-Type': 'text/plain' });
-                res.write('Form Validation Failed');
-                res.end();
+                res.writeHead(400, { ...headers, 'Content-Type': 'text/plain' });
+                res.end('Form Validation Failed');
             } else {
-                res.writeHead(204, { 'Content-Type': 'text/plain' });
+                res.writeHead(204, headers);
                 res.end();
             }
         })
+    } else {
+        res.writeHead(400, { ...headers, 'Content-Type': 'text/plain' });
+        res.end('Unknown Request');
     }
 }
