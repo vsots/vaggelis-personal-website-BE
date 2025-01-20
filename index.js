@@ -1,8 +1,18 @@
 import * as http from 'http';
+import * as nodemailer from 'nodemailer';
 import contactFormValSan from './modules/contactFormValSan.js';
 
 const host = '127.0.0.1';
 const port = 8080;
+
+const emailBody =  (json) => (
+`Name: ${json.name}
+email: ${json.email}
+
+
+Message:
+${json.message}
+`);
 
 const server = http.createServer(handler);
 server.listen(port, host, () => {
@@ -26,6 +36,33 @@ function handler(req, res) {
                 res.writeHead(400, { ...headers, 'Content-Type': 'text/plain' });
                 res.end('Form Validation Failed');
             } else {
+                const transporter = nodemailer.createTransport({
+                    host: 'smtp.host.server',
+                    port: 465,
+                    secure: true,
+                    auth: {
+                        user: "mail@example.com",
+                        pass: "___"
+                    }
+                  });
+                
+                const mailText = emailBody(valid);
+
+                const mailOptions = {
+                    to: 'anothermail@example.com',
+                    subject: valid.subject,
+                    text: mailText
+                }
+
+                transporter.sendMail(mailOptions, function(error, info) {
+                    if (error) {
+                        console.log('ERROR IS: ');
+                        console.log(error);
+                    } else {
+                        console.log('Email sent: ' + info.response)
+                    }
+                })
+
                 res.writeHead(204, headers);
                 res.end();
             }
