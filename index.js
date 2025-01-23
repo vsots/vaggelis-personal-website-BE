@@ -11,8 +11,7 @@ email: ${json.email}
 
 
 Message:
-${json.message}
-`);
+${json.message}`);
 
 const server = http.createServer(handler);
 server.listen(port, host, () => {
@@ -56,8 +55,7 @@ function handler(req, res) {
 
                 transporter.sendMail(mailOptions, function(error, info) {
                     if (error) {
-                        console.log('ERROR IS: ');
-                        console.log(error);
+                        console.log('Error sending email: ', error);
                     } else {
                         console.log('Email sent: ' + info.response)
                     }
